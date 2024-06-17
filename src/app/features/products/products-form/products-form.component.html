@@ -1,0 +1,13 @@
+<po-page-default
+    p-title="Manutenção de Produtos"
+    [p-breadcrumb]="breadcrumb"
+    [p-actions]="actions">
+
+    <po-loading-overlay [hidden]="!isLoading"></po-loading-overlay>
+
+    <po-dynamic-form *ngIf="!isLoading"
+        [p-fields]="fields"
+        (p-form)="setForm($event)"
+        [p-value]="value">
+    </po-dynamic-form>
+</po-page-default>

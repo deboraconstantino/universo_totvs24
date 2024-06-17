@@ -1,0 +1,195 @@
+#include 'tlpp-core.th'
+
+namespace service.products
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} products
+	Serviço para CRUD de produtos - Angular + Protheus.
+	@type		class
+	@author		Totvs
+	@since		18/06/2024
+	@version	12.1.2310
+/*/
+//------------------------------------------------------------------------------
+Class ProductsController
+	Data jResponse  as Json
+	Data nPage      as Numeric
+	Data nPageSize  as Numeric
+	Data aFilters	as Array
+	Data oService   as Object
+
+	Public Method new() as Object
+	Static Method getQueryParam()
+	Static Method setResponse()
+
+	@Get("/api/universototvs/v1/products")
+	Public Method get() as Logical
+
+	@Get("/api/universototvs/v1/products/:id")
+	Public Method getById() as Logical
+
+	@Post("/api/universototvs/v1/products/")
+	Public Method post() as Logical
+
+	@Put("/api/universototvs/v1/products/:id")
+	Public Method put() as Logical
+
+	@Delete("/api/universototvs/v1/products/:id")
+	Public Method delete() as Logical
+EndClass
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} new
+	Inicializa a Classe.
+	@type		Method
+	@author		Totvs
+	@since		18/06/2024
+	@version	12.1.2310
+/*/
+//------------------------------------------------------------------------------
+Method new() as Object Class ProductsController
+	::oService  := ProductsService():new()
+	::jResponse := JsonObject():new()
+Return self
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} get
+	Retorna uma lista com todos os produtos.
+	@type		Method
+	@author		Totvs
+	@since		18/06/2024
+	@version	12.1.2310
+/*/
+//------------------------------------------------------------------------------
+Method get() as Logical Class ProductsController
+	Local cFields as Character
+	Local cSort as Character
+	Local cSearch as Character
+	Local nPage as Numeric
+	Local nPageSize as Numeric
+
+	cFields := getQueryParam('fields')
+	cSort := getQueryParam('sort')
+	cSearch := getQueryParam('search')
+	nPage := getQueryParam('page')
+	nPageSize := getQueryParam('pageSize')
+
+    oRest:setKeyHeaderResponse('Content-Type','application/json; charset=utf-8')
+	oRest:setResponse(::oService:get(Val(nPage), Val(nPageSize), cSearch, cFields, cSort))
+Return .T.
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} getById
+	Retorna um produto.
+	@type		Method
+	@author		Totvs
+	@since		18/06/2024
+	@version	12.1.2310
+/*/
+//------------------------------------------------------------------------------
+Method getById() as Logical Class ProductsController
+	Local cId as Character
+	Local cFields as Character
+
+	cFields := getQueryParam('fields')
+
+	oRest:setKeyHeaderResponse('Content-Type','application/json; charset=utf-8')
+	cId := oRest:getPathParamsRequest()['id']
+	oRest:setResponse(::oService:get(1, 10, /* cSearch */, cFields, /* cSort */, cId))
+Return .T.
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} post
+	Realiza a Inclusão de um Produto.
+	@type		Method
+	@author		Totvs
+	@since		18/06/2024
+	@version	12.1.2310
+/*/
+//------------------------------------------------------------------------------
+Method post() as Logical Class ProductsController
+	Local cBody as Character
+	Local jBody as Json
+
+	oRest:setKeyHeaderResponse('Content-Type','application/json; charset=utf-8')
+
+	cBody := oRest:getBodyRequest()
+	jBody := JsonObject():New()
+
+	If jBody:FromJson(cBody) == Nil
+		oRest:setResponse(::oService:post(3, jBody))
+	Else
+		setRestFault(400, "Json inválido")
+	EndIf
+Return
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} put
+	Realiza a Alteração de um Produto.
+	@type		Method
+	@author		Totvs
+	@since		18/06/2024
+	@version	12.1.2310
+/*/
+//------------------------------------------------------------------------------
+Method put() as Logical Class ProductsController
+	Local cBody as Character
+	Local jBody as Json
+	Local cId as Character
+
+	oRest:setKeyHeaderResponse('Content-Type','application/json; charset=utf-8')
+
+	cId := oRest:getPathParamsRequest()['id']
+	cBody := oRest:getBodyRequest()
+	jBody := JsonObject():New()
+
+	If jBody:FromJson(cBody) == Nil
+		oRest:setResponse(::oService:put(4, jBody, cId))
+	Else
+		setRestFault(400, "Json inválido")
+	EndIf
+Return
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} delete
+	Realiza a Deleção de um Produto.
+	@type		Method
+	@author		Totvs
+	@since		18/06/2024
+	@version	12.1.2310
+/*/
+//------------------------------------------------------------------------------
+Method delete() as Logical Class ProductsController
+	Local cId as Character
+
+	oRest:setKeyHeaderResponse('Content-Type','application/json; charset=utf-8')
+
+	cId := oRest:getPathParamsRequest()['id']
+    oRest:setStatusCode(204)
+	oRest:setResponse(::oService:delete(5, cId))
+Return
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} getQueryParam
+	Retorna os parâmetros (query params) adicionados na requisição.
+	@type		Method
+	@author		Totvs
+	@since		18/06/2024
+	@version	12.1.2310
+	@param		cName, character, nome do parâmetro
+/*/
+//------------------------------------------------------------------------------
+Function getQueryParam(cName as Character) as Character
+    Local cParamText as Character
+
+    cParamText := oRest:getQueryRequest():GetJsonText(cName)
+    If cParamText == 'null'
+        If cName == 'page'
+            cParamText := '1'
+        ElseIf cName == 'pageSize'
+            cParamText := '10'
+        Else
+            cParamText := ''
+        EndIf
+    EndIf
+Return cParamText

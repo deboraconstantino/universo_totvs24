@@ -1,0 +1,182 @@
+#include "tlpp-core.th"
+
+namespace service.products
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} ProductsData
+	Classe para manipulação dos dados do produto.
+	@type		class
+	@author		TOTVS
+	@since		18/06/2024
+	@version	12.1.2310
+/*/
+//------------------------------------------------------------------------------
+CLASS ProductsData FROM FWAdapterBaseV2
+
+	Public method new() as Object
+    Public method handleProducts() as Logical
+	Public method get()
+EndClass
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} ProductsData:new() as Object
+	Obtem uma nova instancia da classe ProductsData
+	@type		method
+	@author		TOTVS
+	@since		18/06/2024
+	@version	12.1.2310
+	@return 	Object, Nova instancia da classe ProductsData
+/*/
+//------------------------------------------------------------------------------
+Method new() as Object CLASS ProductsData
+    _Super:new("GET", .T.)
+Return Self
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} ProductsData::get
+	Efetua a consulta de produtos.
+	@type		method
+	@author		TOTVS
+	@since		18/06/2024
+	@version	12.1.2310
+	@param		nPage		, numeric	, Número da página que será retornada
+	@param		nPageSize	, numeric	, Quantidade de registros por pagina
+	@param		aURLFilter	, array		, Lista de Filtros no padrão do FWAdapterBaseV2
+	@param		cFields		, character	, Lista de campos que devem ser retornados
+	@param		cId			, character	, Id do produto
+	@param		cSort		, character	, Ordernação do Response
+/*/
+//------------------------------------------------------------------------------
+Method get(nPage as Numeric, nPageSize as Numeric, cSearch as Character, cFields as Character, cSort as Character, cProductId as Character) Class ProductsData
+    Local aArea as Array
+    Local cWhere as Character
+    Local aFilter as Array
+
+    aFilter := {}
+
+    If Empty(cProductId)
+        cWhere := "B1_FILIAL = '" + FwxFilial("SB1") + "' AND D_E_L_E_T_ = ''"
+    Else
+        cWhere := "B1_COD = '" + cProductId + "' AND B1_FILIAL = '" + FwxFilial("SB1") + "' AND D_E_L_E_T_ = ''"
+    EndIf
+
+    aArea   := FwGetArea()
+
+    AddMapFields(self)
+    ::SetQSearchPar()
+
+    If !Empty(cSearch)
+        aAdd(aFilter, {"search", cSearch})
+        ::SetUrlFilter(aFilter)
+    EndIf
+
+    If !Empty(cFields)
+        ::SetFields(cFields)
+    EndIf
+
+    If !Empty(cSort)
+        ::SetOrderQuery(cSort)
+    EndIf
+
+    ::SetPage(nPage)
+    ::SetPageSize(nPageSize)
+    ::SetQuery(getQuery())
+    ::SetWhere(cWhere)
+    ::SetOrder("B1_FILIAL, B1_COD")
+
+    If ::Execute()
+        ::FillGetResponse()
+    EndIf
+
+    RestArea( aArea )
+	aSize( aArea, 0 )
+Return Nil
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} AddMapFields
+    Cria o Mapa de campos Protheus x API para os produtos.
+	@type		function
+    @author		TOTVS
+	@since		18/06/2024
+	@version	12.1.2310
+	@param		oSelf	, Object	, Objeto com herança da classe FWAdapterBaseV2
+
+/*/
+//------------------------------------------------------------------------------
+Function AddMapFields(oSelf as Object)
+
+    oSelf:AddMapFields("B1_FILIAL", "B1_FILIAL", .T., .F., { "B1_FILIAL"  , 'C', GetSx3Cache("B1_FILIAL", "X3_TAMANHO"), 0 }, , .T.)
+	oSelf:AddMapFields("B1_COD", "B1_COD", .T., .F., { "B1_COD"  , 'C', GetSx3Cache("B1_COD", "X3_TAMANHO"), 0 }, , .T.)
+	oSelf:AddMapFields("B1_DESC", "B1_DESC", .T., .F., { "B1_DESC"  , 'C', GetSx3Cache("B1_DESC", "X3_TAMANHO"), 0 }, , .T.)
+	oSelf:AddMapFields("B1_TIPO", "B1_TIPO", .T., .F., { "B1_TIPO"    , 'C', GetSx3Cache("B1_TIPO", "X3_TAMANHO"), 0 }, , .T.)
+	oSelf:AddMapFields("B1_UM", "B1_UM", .T., .F., { "B1_UM"    , 'C', GetSx3Cache("B1_UM", "X3_TAMANHO"), 0 }, , .T.)
+	oSelf:AddMapFields("B1_LOCPAD", "B1_LOCPAD", .T., .F., { "B1_LOCPAD"  , 'C', GetSx3Cache("B1_LOCPAD", "X3_TAMANHO"), 0 }, , .T.)
+
+Return Nil
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} ProductsData:handleProducts()
+	Inclui, altera ou exclui um produto
+	@type		method
+	@author		TOTVS
+	@since		18/06/2024
+	@version	12.1.2310
+/*/
+//------------------------------------------------------------------------------
+Method handleProducts(nOperation as Numeric, jBody as Json, cProductId as Character) as Logical Class ProductsData
+    If nOperation == 3
+        If (SB1->(DbSeek(xFilial("SB1") + jBody["b1_cod"])))
+            SetRestFault(400, FwHttpEncode("Produto já cadastrado."))
+            jBody := Nil
+        Else
+            RecLock("SB1", .T.)
+                SB1->B1_FILIAL	:= xFilial("SB1")
+                SB1->B1_COD		:= jBody["b1_cod"]
+                SB1->B1_DESC	:= jBody["b1_desc"]
+                SB1->B1_TIPO	:= jBody["b1_tipo"]
+                SB1->B1_LOCPAD	:= jBody["b1_locpad"]
+                SB1->B1_UM	    := jBody["b1_um"]
+            MsUnlock()
+        EndIf
+    ElseIf nOperation == 4
+        If (SB1->(DbSeek(xFilial("SB1") + cProductId)))
+            RecLock("SB1", .F.)
+                SB1->B1_FILIAL	= xFilial("SB1")
+                SB1->B1_COD		:= jBody["b1_cod"]
+                SB1->B1_DESC	:= jBody["b1_desc"]
+                SB1->B1_TIPO	:= jBody["b1_tipo"]
+                SB1->B1_LOCPAD	:= jBody["b1_locpad"]
+                SB1->B1_UM	    := jBody["b1_um"]
+            MsUnlock()
+        Else
+            jBody := Nil
+            SetRestFault(404, FwHttpEncode("Produto não encontrado."))
+        EndIf
+    ElseIf nOperation == 5
+        If (SB1->(DbSeek(xFilial("SB1") + cProductId)))
+            RecLock("SB1", .F.)
+                SB1->(Dbdelete())
+            MsUnlock()
+        Else
+            SetRestFault(404, FwHttpEncode("Produto não encontrado."))
+        EndIf
+    EndIf
+Return jBody
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} getQuery
+    Monta a expressão SQL para consulta dos produtos.
+	@type		function
+    @author		TOTVS
+	@since		18/06/2024
+	@version	12.1.2310
+    @return		Character, Expressão SQL
+/*/
+//------------------------------------------------------------------------------
+Static Function getQuery() as Character
+	Local cQuery AS Character
+
+	cQuery := " SELECT #QueryFields#"
+	cQuery += " FROM " + RetSqlName("SB1") + " SB1 "
+	cQuery += " WHERE #QueryWhere#"
+Return cQuery

@@ -1,0 +1,34 @@
+<po-page-dynamic-table
+    p-title="Meus Produtos"
+    p-service-api="/api/universototvs/v1/products"
+    [p-fields]="fields"
+    [p-actions]="actions"
+    [p-table-custom-actions]="tableCustomActions">
+</po-page-dynamic-table>
+
+<po-modal #balanceModal p-title="Saldo" style="position: relative;">
+    <po-loading-overlay [hidden]="!isLoadingBalance"></po-loading-overlay>
+    <span *ngIf="!isLoadingBalance">{{ balance }}</span>
+</po-modal>
+
+<!-- <po-page-default>
+    <table>
+        <thead>
+            <tr>
+                <th>Coluna 1</th>
+                <th>Coluna 2</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Conteudo 1</td>
+                <td>Conteudo 1</td>
+            </tr>
+    
+            <tr>
+                <td>Conteudo 1</td>
+                <td>Conteudo 1</td>
+            </tr>
+        </tbody>
+    </table>
+</po-page-default> -->

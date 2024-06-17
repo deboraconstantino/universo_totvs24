@@ -1,27 +1,15 @@
-# UniversoTotvs24
+# Universo TOTVS 2024
+Repositório com aplicativo web desenvolvido para demonstração do uso da biblioteca protheus-lib-core no Universo TOTVS 2024.
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.8.
-
-## Development server
-
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## Documentações complementares
+- Angular: https://angular.io/
+- PO-UI: https://po-ui.io/
+- Rest 2.0: https://tdn.totvs.com/display/public/framework/Entendendo+as+novidades+do+REST
+- TLPP: https://tdn.totvs.com/display/tec/TLpp
+- FwAdapterBaseV2: https://tdn.totvs.com/display/framework/09.+FWAdapterBaseV2
+- Protheus-lib-core: https://tdn.totvs.com/display/public/framework/Protheus-lib-core
+- FwCallApp: https://tdn.totvs.com.br/display/public/framework/FwCallApp
+- Porta multiprotocolo: https://tdn.totvs.com/display/tec/Application+Server+-+Porta+Multiprotocolo
+- Apps no Protheus: https://medium.com/totvsdevelopers/apps-no-protheus-10db4f47f9fc
+- API para retorno do SX3 (fwformstructview): https://tdn.totvs.com/display/public/framework/BasicProtheusServices
+- API para retorno de consulta padrão (F3): https://tdn.totvs.com/display/public/framework/GenericLookupService

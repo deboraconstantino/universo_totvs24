@@ -1,0 +1,56 @@
+<po-page-default
+    p-title="Exemplos com o protheus-lib-core"
+    [p-breadcrumb]="breadcrumb">
+
+    <po-accordion>
+        <po-accordion-item p-label="Serviço de empresas" (p-expand)="getCompanies()" style="position: relative;">
+            <po-loading-overlay [hidden]="!isLoading"></po-loading-overlay>
+
+            <div class="po-row" *ngIf="!isLoading && companies">
+                <po-combo class="po-xl-6 po-lg-6 po-md-6 po-sm-12" p-label="Empresa (PO Combo)" [p-options]="companiesOptions"></po-combo>
+
+                <po-select class="po-xl-6 po-lg-6 po-md-6 po-sm-12" p-label="Empresa (PO Select)" [p-options]="companiesOptions"></po-select>
+
+                <po-multiselect class="po-xl-6 po-lg-6 po-md-6 po-sm-12" p-label="Empresa (PO Multiselect)" [p-options]="companiesOptions"></po-multiselect>
+
+                <po-table
+                    [p-items]="companies.items!"
+                    [p-show-more-disabled]="!companies.hasNext">
+                </po-table>
+            </div>
+        </po-accordion-item>
+
+        <po-accordion-item p-label="Serviço de filiais" (p-expand)="getBranches()" style="position: relative;">
+            <po-loading-overlay [hidden]="!isLoading"></po-loading-overlay>
+
+            <div class="po-row" *ngIf="!isLoading && branches">
+                <po-combo class="po-xl-6 po-lg-6 po-md-6 po-sm-12" p-label="Filial (PO Combo)" [p-options]="branchesOptions"></po-combo>
+
+                <po-select class="po-xl-6 po-lg-6 po-md-6 po-sm-12" p-label="Filial (PO Select)" [p-options]="branchesOptions"></po-select>
+
+                <po-multiselect class="po-xl-6 po-lg-6 po-md-6 po-sm-12" p-label="Filial (PO Multiselect)" [p-options]="branchesOptions"></po-multiselect>
+
+                <po-table
+                    [p-items]="branches.items!"
+                    [p-show-more-disabled]="!branches.hasNext">
+                </po-table>
+            </div>
+        </po-accordion-item>
+
+        <po-accordion-item p-label="Serviço de acessos do usuário" (p-expand)="getBranches()" style="position: relative;">
+            <po-loading-overlay [hidden]="!isLoading"></po-loading-overlay>
+
+            <div class="po-row">
+                <po-input class="po-xl-3 po-lg-3 po-md-3 po-sm-6" p-label="Rotina" [(ngModel)]="routine"></po-input>
+                <po-number class="po-xl-1 po-lg-1 po-md-1 po-sm-1" p-label="Ação" [(ngModel)]="action"></po-number>
+                <po-button class="po-xl-1 po-lg-1 po-md-1 po-sm-3 po-mt-4" p-label="Validar acesso" (p-click)="getAccessRoutine()"></po-button>
+            </div>
+
+            <div class="po-row">
+                <po-input class="po-xl-3 po-lg-3 po-md-3 po-sm-6" p-label="Alias" [(ngModel)]="alias"></po-input>
+                <po-button class="po-xl-1 po-lg-1 po-md-1 po-sm-3 po-mt-4" p-label="Validar acesso" (p-click)="getAccessAlias()"></po-button>
+            </div>
+
+        </po-accordion-item>
+    </po-accordion>
+</po-page-default>
